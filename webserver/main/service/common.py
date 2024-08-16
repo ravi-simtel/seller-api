@@ -4,12 +4,13 @@ from datetime import datetime
 import requests
 
 from main.config import get_config_by_name
-from main.models import get_mongo_collection
+from main.models import BaseModel
 from main.models.error import DatabaseError
 from main.models.ondc_request import OndcDomain
 from main.repository import mongo
 from main.repository.ack_response import get_ack_response
 
+model = BaseModel()
 
 def get_responses_from_client(request_type, payload):
     if "issue" in request_type:
@@ -22,7 +23,7 @@ def get_responses_from_client(request_type, payload):
 
 def dump_request_payload(request_payload, domain, action=None):
     action = action if action else request_payload['context']['action']
-    collection_name = get_mongo_collection(action)
+    collection_name = model.get_mongo_collection(action)
     filter_criteria = {"context.message_id": request_payload['context']['message_id']}
     if domain == OndcDomain.LOGISTICS.value:
         filter_criteria["context.bpp_id"] = request_payload['context']['bpp_id']
@@ -43,7 +44,7 @@ def get_network_request_payloads(**kwargs):
         key_parts = k.split("_", maxsplit=1)
         domain, action = key_parts[0], key_parts[1]
         message_ids = [x.strip() for x in v.split(",")]
-        search_collection = get_mongo_collection(action)
+        search_collection = model.get_mongo_collection(action)
         query_object = {"context.message_id": {"$in": message_ids}}
         catalogs = mongo.collection_find_all(
             search_collection, query_object)["data"]
@@ -52,7 +53,7 @@ def get_network_request_payloads(**kwargs):
 
 
 def get_active_ondc_requests():
-    search_collection = get_mongo_collection("search")
+    search_collection = model.get_mongo_collection("search")
     query_object = {"message.intent.tags.code": "catalog_inc"}
     catalogs = mongo.collection_find_all(search_collection, query_object)
     return catalogs

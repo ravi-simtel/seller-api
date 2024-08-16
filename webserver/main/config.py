@@ -1,73 +1,84 @@
 import os
 from datetime import timedelta
+from dotenv import load_dotenv 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-
+BASE_DIR = os.path.join(os.path.dirname( os.path.dirname( __file__ )), '.env' )
+print(BASE_DIR)
+load_dotenv(BASE_DIR)
 
 class Config:
     OTP_TIMEOUT_IN_MINUTES = 60
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
+    AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+    AWS_ACCESS_SECRET = os.getenv('AWS_ACCESS_SECRET')
+
     DEBUG = False
     COOKIE_EXPIRY = 60000
-    PORT = 9900
-    FLASKS3_BUCKET_NAME = os.getenv('static_bucket_name')
+    PORT = 3021
+    FLASKS3_BUCKET_NAME = os.getenv('STATIC_BUCKET_NAME')
     FLASKS3_FILEPATH_HEADERS = {r'.css$': {'Content-Type': 'text/css; charset=utf-8'},
                                 r'.js$': {'Content-Type': 'text/javascript'}}
     FLASKS3_ACTIVE = os.getenv("flask_s3_active", "True") == "True"
     FLASKS3_GZIP = True
     CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     JWT_TOKEN_LOCATION = ['headers']
-    S3_PRIVATE_BUCKET = os.getenv("PRIVATE_BUCKET")
     # below is valid for tokens coming in as part of query_params
     JWT_QUERY_STRING_NAME = "token"
     # Set the secret key to sign the JWTs with
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-    DOMAIN = "nic2004:52110"
+    DOMAIN = "ONDC:RET14"
     CITY_CODE = "std:080"
     COUNTRY_CODE = "IND"
     BAP_TTL = "20"
     BECKN_SECURITY_ENABLED = False
-    SQLALCHEMY_POOL_SIZE = int(os.getenv("SQLALCHEMY_POOL_SIZE", "2"))
-    BPP_PRIVATE_KEY = os.getenv("BPP_PRIVATE_KEY", "some-key")
-    BPP_PUBLIC_KEY = os.getenv("BPP_PUBLIC_KEY", "some-key")
-    BPP_ID = os.getenv("BPP_ID", "sellerapp-staging.datasyndicate.in")
-    BPP_URI = os.getenv("BPP_URI", "https://sellerapp-staging.datasyndicate.in/")
-    BPP_UNIQUE_KEY_ID = os.getenv("BPP_UNIQUE_KEY_ID", "351")
-    BPP_CLIENT_ENDPOINT = os.getenv("BPP_CLIENT_ENDPOINT", "client")
+    SQLALCHEMY_POOL_SIZE = int(os.getenv("SQLALCHEMY_POOL_SIZE"))
+    BPP_PRIVATE_KEY = os.getenv("BPP_PRIVATE_KEY")
+    BPP_PUBLIC_KEY = os.getenv("BPP_PUBLIC_KEY")
+    BPP_ID = os.getenv("BPP_ID")
+    BPP_URI = os.getenv("BPP_URI")
+    BPP_UNIQUE_KEY_ID = os.getenv("BPP_UNIQUE_KEY_ID")
+    BPP_CLIENT_ENDPOINT = os.getenv("BPP_CLIENT_ENDPOINT")
     IGM_CLIENT_ENDPOINT = os.getenv(
-        "IGM_CLIENT_ENDPOINT", "http://seller-app-igm:8000/api")
-    BG_DEFAULT_URL = os.getenv("BG_DEFAULT_URL", "https://staging.registry.ondc.org")
-    BG_DEFAULT_URL_FLAG = os.getenv("BG_DEFAULT_URL_FLAG", "True") == "True"
-    LOGISTICS_ON_SEARCH_WAIT = int(os.getenv("LOGISTICS_ON_SEARCH_WAIT", "3"))
+        "IGM_CLIENT_ENDPOINT")
+    BG_DEFAULT_URL = os.getenv("BG_DEFAULT_URL")
+    BG_DEFAULT_URL_FLAG = os.getenv("BG_DEFAULT_URL_FLAG")
+    LOGISTICS_ON_SEARCH_WAIT = int(os.getenv("LOGISTICS_ON_SEARCH_WAIT"))
+    print(LOGISTICS_ON_SEARCH_WAIT)
     TTL_IN_SECONDS = int(os.getenv("TTL_IN_SECONDS", "3600"))
-    VERIFICATION_ENABLE = os.getenv("VERIFICATION_ENABLE", "True") == "True"
-    REGISTRY_BASE_URL = os.getenv("REGISTRY_BASE_URL", "https://preprod.registry.ondc.org/ondc")
-
+    VERIFICATION_ENABLE = os.getenv("VERIFICATION_ENABLE")
+    REGISTRY_BASE_URL = os.getenv("REGISTRY_BASE_URL")
+    SECRET_KEY=os.getenv("SECRET_KEY")
 
 class DevelopmentConfig(Config):
+    BASE_DIR = os.path.join(os.path.dirname( os.path.dirname( __file__ )), '.env' )
+    print(BASE_DIR)
+    load_dotenv(BASE_DIR)
     DEBUG = True
     ENV = True
     RABBITMQ_HOST = "localhost"
-    MONGO_DATABASE_HOST = "localhost"
-    MONGO_DATABASE_PORT = 27017
-    MONGO_DATABASE_NAME = "sandbox_bpp"
-
+    MONGO_DATABASE_SRV="mongodb://localhost:27017/"
+    #MONGO_DATABASE_SRV = os.getenv("MONGO_DATABASE_SRV")
 
 class ProductionConfig(Config):
+    BASE_DIR = os.path.join(os.path.dirname( os.path.dirname( __file__ )), '.env' )
+    print(BASE_DIR)
+    load_dotenv(BASE_DIR)
+    
     DEBUG = False
     RABBITMQ_HOST = "rabbitmq"
-    MONGO_DATABASE_HOST = os.getenv("MONGO_DATABASE_HOST", "mongo")
-    MONGO_DATABASE_PORT = int(os.getenv("MONGO_DATABASE_PORT", 27017))
-    MONGO_DATABASE_NAME = os.getenv("MONGO_DATABASE_NAME", "sandbox_bpp")
+    MONGO_DATABASE_SRV = os.getenv("MONGO_DATABASE_SRV")
+    MONGO_DATABASE_NAME = os.getenv("MONGO_DATABASE_NAME")
 
 
 class PreProductionConfig(Config):
+    BASE_DIR = os.path.join(os.path.dirname( os.path.dirname( __file__ )), '.env' )
+    print(BASE_DIR)
+    load_dotenv(BASE_DIR)
+    
     DEBUG = False
     RABBITMQ_HOST = "rabbitmq"
-    MONGO_DATABASE_HOST = os.getenv("MONGO_DATABASE_HOST", "mongo")
-    MONGO_DATABASE_PORT = int(os.getenv("MONGO_DATABASE_PORT", 27017))
-    MONGO_DATABASE_NAME = os.getenv("MONGO_DATABASE_NAME", "sandbox_bpp")
+    MONGO_DATABASE_SRV= os.getenv("MONGO_DATABASE_SRV")
+    MONGO_DATABASE_NAME = os.getenv("MONGO_DATABASE_NAME")
 
 
 config_by_name = dict(
@@ -80,7 +91,7 @@ key = Config.SECRET_KEY
 
 
 def get_config_by_name(config_name, default=None, env_param_name=None):
-    config_env = os.getenv(env_param_name or "ENV")
+    config_env = os.getenv("ENV")
     config_value = default
     if config_env:
         config_value = getattr(config_by_name[config_env](), config_name, default)

@@ -4,7 +4,10 @@ from flask_cors import CORS
 
 from main.flask_app import app
 from main.routes import api
+from dotenv import load_dotenv
 
+file = os.path.dirname(os.path.dirname('.env_dev'))
+load_dotenv(file)
 
 api.init_app(app)
 CORS(app)
